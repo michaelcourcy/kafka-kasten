@@ -17,9 +17,9 @@ For this presentation we used the 0.23.0 version of strimzi.
 
 ## A cluster and a mirror cluster 
 
-kafka and kafka-mirror namespace hold respectively the primary kafka cluster where producers 
-put messages on the blogs and items topic and the mirrored cluster where mirror maker 2 is the 
-only producer. This setting is very important and allow us to : 
+![env](images/blueprint-mirror-maker.png)
+
+We mirror the primary cluster. This setting is very important and allow us to : 
 *   Validate that a restore does not lose data because we have a mirror to compare
 *   Provide an application consistent method for backing up kafka by operating the 
 backup on the mirror rather than on the primary
@@ -72,13 +72,13 @@ Partition 1: --------------------------
 Partition 2: ------------------------------
 ```
 
-### 3. Applcation consistent backup 
+### 3. Application consistent backup 
 
 In this [part](test-plan/03_app-consistent-snap-restored.md) we run the backup on 
 the mirror not on the source itself. But we are able to perform operation that 
 can't be done on the primary like : 
 *   Stop all mirrormaker productions before snapshot 
-*   call sync to flush all file to the disk 
+*   Call sync to flush all file to the disk 
 *   Stop the brokers and zookeepers before snapshot
 *   Restart the brokers and zookeepers after snapshot
 *   Restart mirrormaker production after snapshot 
