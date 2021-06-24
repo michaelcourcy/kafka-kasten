@@ -1,0 +1,25 @@
+# Annotate deployment or statefulset object with this blueprint
+apiVersion: cr.kanister.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: scale-down-up-bp
+  namespace: kasten-io
+actions:
+  backupPrehook:
+    type: Statefulset
+    phases:                  
+    - func: ScaleWorkload
+      name: downPhase
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'    
+        kind: '{{ index .Object "kind" | toString  }}'
+        replicas: 0                      
+  
+  backupPosthook:
+    phases:    
+    - func: ScaleWorkload
+      name: upPhase
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'
+        kind: '{{ index .Object "kind" | toString  }}'
+        replicas: 3         

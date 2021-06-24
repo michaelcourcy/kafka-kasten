@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: items
+  labels:
+    app: items
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      run: kafka-items-producer
+  template:
+    metadata:
+      labels:
+        run: kafka-items-producer
+    spec:
+      containers:
+        - name: producer
+          env: 
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name 
+          image: 'strimzi/kafka:0.20.0-kafka-2.6.0'
+          args:
+            - bash
+            - '-c'
+            - >-
+              (while true; do echo "$(date) -- $POD_NAME $(uuidgen)"; done) 
+              | bin/kafka-console-producer.sh
+              --broker-list my-cluster-kafka-bootstrap:9092 --topic items

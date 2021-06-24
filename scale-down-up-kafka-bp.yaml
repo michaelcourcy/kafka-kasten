@@ -1,0 +1,131 @@
+# Annotate deployment or statefulset object with this blueprint
+apiVersion: cr.kanister.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: scale-down-up-kafka-bp
+  namespace: kasten-io
+actions:
+  backupPrehook:
+    type: Statefulset
+    phases:
+    - func: ScaleWorkload
+      name: scaleDownMirrorMaker
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'    
+        kind: 'deployment'
+        replicas: 0 
+        name: 'my-mirror-maker-mirrormaker2'          
+    - func: KubeExec
+      name: flushKafkaBroker0
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 0 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync 
+    - func: KubeExec
+      name: flushKafkaBroker1
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 1 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync
+    - func: KubeExec
+      name: flushKafkaBroker2
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 2 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync   
+    - func: KubeExec
+      name: flushKafkaBroker3
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 3 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync   
+    - func: KubeExec
+      name: flushKafkaBroker4
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 4 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync
+    - func: KubeExec
+      name: flushKafkaBroker5
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}' 
+        pod: "{{ index .StatefulSet.Pods 5 }}"
+        container: kafka
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          sync                            
+    - func: ScaleWorkload
+      name: scaleDownKafkaBroker
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'    
+        kind: '{{ index .Object "kind" | toString  }}'
+        replicas: 0                      
+  
+  
+  backupPosthook:
+    phases:    
+    - func: ScaleWorkload
+      name: scaleUpKafkaBroker
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'
+        kind: '{{ index .Object "kind" | toString  }}'
+        replicas: 6         
+    - func: ScaleWorkload
+      name: scaleUpMirrorMaker
+      args:
+        namespace: '{{ index .Object.metadata "namespace" | toString  }}'    
+        kind: 'deployment'
+        replicas: 1 
+        name: 'my-mirror-maker-mirrormaker2' 
+    

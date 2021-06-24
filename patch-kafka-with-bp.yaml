@@ -1,0 +1,13 @@
+spec:
+  kafka:
+    template:
+      statefulset:
+        metadata:
+          annotations:
+            kanister.kasten.io/blueprint: scale-down-up-kafka-bp
+  zookeeper:
+    template:
+      statefulset:
+        metadata:
+          annotations:
+            kanister.kasten.io/blueprint: scale-down-up-bp
