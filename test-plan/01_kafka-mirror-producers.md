@@ -73,7 +73,7 @@ deployment.apps/blogs created
 deployment.apps/strimzi-cluster-operator-v0.23.0 scaled
 ```
 
-## Assuption 1 : We have around 8000 thousand messages per second on each cluster
+##  We have around 8000 messages per second on each cluster
 
 We can verify that with the `count_message_per_seconds.sh <cluster-ns> <topic>` script 
 
@@ -103,7 +103,7 @@ my-source-cluster.blogs:2:2004406
 
 We have the same result for items topic hence 8000 messages per second.
 
-## Assumtion 2  : There is exactly the same data between the 2 clusters 
+## There is exactly the same data between the 2 clusters 
 
 Stop the producers 
 ```
